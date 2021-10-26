@@ -1,18 +1,30 @@
 'use strict';
 
 // 3rd Party Resources
+require('dotenv');
 const express = require('express');
 const bcrypt = require('bcrypt');
 const base64 = require('base-64');
 const { Sequelize, DataTypes } = require('sequelize');
+
+let DATABASE_URL = process.env.DATABASE_URL || 'sqlite:memory';
+
+const options = process.env.NODE_ENV === 'production' ? {
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+} : {};
+
+const sequelize = new Sequelize(DATABASE_URL, options);
 
 // Prepare the express app
 const app = express();
 
 // Process JSON input and put the data on req.body
 app.use(express.json());
-
-const sequelize = new Sequelize(process.env.DATABASE_URL);
 
 // Process FORM intput and put the data on req.body
 app.use(express.urlencoded({ extended: true }));
